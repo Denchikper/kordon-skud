@@ -1,5 +1,5 @@
 {
-    "debug": true,
+    "debug": false,
 
     "D_programPath": "C:\\Windows\\System32\\notepad.exe",
     "D_destFilePath": "D:\\Development\\SKYD_utility\\end\\parsec.ini",
