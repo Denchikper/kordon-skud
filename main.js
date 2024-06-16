@@ -57,10 +57,11 @@ ipcMain.on('copy-file', async (event, { source }) => {
         event.reply('copy-file-success', 'File copy successful!');
     } catch (err) {
         console.error('Copy file error:', err);
+        event.reply('copy-file-error', 'opy file error');
     }
 });
 
-ipcMain.on('close-program', async () => {
+ipcMain.on('close-program', async (event) => {
   if(settings.debug) {
     destFileDelete = settings.D_destFilePath
   } else { destFileDelete = settings.destFilePath }
@@ -68,6 +69,7 @@ ipcMain.on('close-program', async () => {
   try {
       await fs.remove(destFileDelete);
       console.log('File delete successful!');
+      event.reply('copy-file-success', 'File copy successful!');
       // app.quit();
   } catch (err) {
       console.error('Delete file error:', err);
