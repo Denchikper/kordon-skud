@@ -2,6 +2,7 @@ const { app, BrowserWindow, nativeTheme, ipcMain } = require('electron');
 const path = require("path");
 const { execFile } = require('child_process');
 const fs = require('fs-extra');
+const settings = require("./settings.json")
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -30,33 +31,44 @@ app.on('window-all-closed', () => {
         app.quit();
 });
 
-ipcMain.on('run-program', (event, programPath) => {
+ipcMain.on('run-program', () => {
+    if(settings.debug) {
+      programPath = settings.D_programPath
+    } else { programPath = settings.programPath }
+
     execFile(programPath, (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error executing file: ${error}`);
+        console.error(`Program start error: ${error}`);
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
         return;
       }
-      console.log(`stdout: ${stdout}`);
-      console.error(`stderr: ${stderr}`);
     });
 });
 
-ipcMain.on('copy-file', async (event, { source, destination }) => {
+ipcMain.on('copy-file', async (event, { source }) => {
+    if(settings.debug) {
+      destFileCopy = settings.D_destFilePath
+    } else { destFileCopy = settings.destFilePath }
+
     try {
-        await fs.copy(source, destination);
-        event.reply('copy-file-success', 'File copied successfully');
+        await fs.copy(source, destFileCopy);
+        console.log('File copy successful!');
     } catch (err) {
-        console.error('Error copying file:', err);
-        event.reply('copy-file-error', 'Error copying file');
+        console.error('Copy file error:', err);
     }
 });
 
-ipcMain.on('delete-file', async (event, filePath) => {
+ipcMain.on('close-program', async () => {
+  if(settings.debug) {
+    destFileDelete = settings.D_destFilePath
+  } else { destFileDelete = settings.destFilePath }
+  
   try {
-      await fs.remove(filePath);
-      event.reply('delete-file-success', 'File deleted successfully');
+      await fs.remove(destFileDelete);
+      console.log('File delete successful!');
+      // app.quit();
   } catch (err) {
-      console.error('Error deleting file:', err);
-      event.reply('delete-file-error', 'Error deleting file');
+      console.error('Delete file error:', err);
   }
 });
