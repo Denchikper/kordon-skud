@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    skud_utility_lib::run()
+    kordon_lib::run()
 }

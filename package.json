@@ -1,7 +1,7 @@
 {
-  "name": "skud_utility",
+  "name": "kordon",
   "version": "2.0.0",
-  "description": "Утилита СКУД для ParsecNET (Tauri)",
+  "description": "Кордон — утилита СКУД для ParsecNET (Tauri)",
   "author": "Daniil Mankus",
   "license": "ISC",
   "type": "module",

@@ -28,7 +28,7 @@ export function MainView({
       <header className="topbar">
         <div className="topbar__title">
           <span className="topbar__mark" aria-hidden>СКУД</span>
-          <h1>Утилита СКУД</h1>
+          <h1>Кордон</h1>
         </div>
         <button
           type="button"
