@@ -46,12 +46,36 @@ pub fn apply_profile(app: AppHandle, folder: String) -> Result<String, String> {
     }
 
     let dest = PathBuf::from(&cfg.dest_file_path);
-    if let Some(parent) = dest.parent() {
-        fs::create_dir_all(parent)
-            .map_err(|e| format!("не удалось создать каталог назначения: {e}"))?;
+
+    if dest.is_dir() {
+        return Err(format!(
+            "целевой путь — это папка, а не файл: {}. Укажите в настройках путь к parsec.ini",
+            dest.display()
+        ));
     }
+
+    if let Some(parent) = dest.parent() {
+        fs::create_dir_all(parent).map_err(|e| {
+            format!("не удалось создать каталог назначения {}: {e}", parent.display())
+        })?;
+    }
+
+    // A pre-existing read-only parsec.ini makes the copy fail with "access
+    // denied" (os error 5) even under administrator rights. Clear the attribute
+    // and delete the old file so a fresh copy can be written.
+    if dest.exists() {
+        if let Ok(meta) = fs::metadata(&dest) {
+            let mut perms = meta.permissions();
+            if perms.readonly() {
+                perms.set_readonly(false);
+                let _ = fs::set_permissions(&dest, perms);
+            }
+        }
+        let _ = fs::remove_file(&dest);
+    }
+
     fs::copy(&source, &dest)
-        .map_err(|e| format!("не удалось скопировать конфиг: {e}"))?;
+        .map_err(|e| format!("не удалось скопировать конфиг в {}: {e}", dest.display()))?;
 
     Ok(dest.display().to_string())
 }
